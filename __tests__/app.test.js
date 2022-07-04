@@ -47,6 +47,7 @@ describe("GET: /api/reviews/:review_id", () => {
               "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
             created_at: "2021-01-18T10:00:20.514Z",
             votes: 1,
+            comment_count: 0,
           },
         });
       });
@@ -103,6 +104,7 @@ describe("PATCH /api/reviews/:review_id", () => {
               "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
             created_at: "2021-01-18T10:00:20.514Z",
             votes: 1,
+            comment_count: 0,
           },
         });
       });
