@@ -27,14 +27,6 @@ describe("GET: /api/categories", () => {
         });
       });
   });
-  test("ERROR 404: returns bad path if wrong endpoint written", () => {
-    return request(app)
-      .get("/api/categorys")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.message).toBe("Path not found");
-      });
-  });
 });
 
 describe("GET: /api/reviews/:review_id", () => {
@@ -59,20 +51,23 @@ describe("GET: /api/reviews/:review_id", () => {
         });
       });
   });
+  test("ERROR 404: returns review does not exist if review_id does not exist", () => {
+    return request(app)
+      .get("/api/reviews/500")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad Request - review_id does not exist");
+      });
+  });
+});
+
+describe("Generic errors of API", () => {
   test("ERROR 404: returns bad path if wrong endpoint written", () => {
     return request(app)
-      .get("/api/reviewz/1")
+      .get("/api/categorys")
       .expect(404)
       .then(({ body }) => {
         expect(body.message).toBe("Path not found");
-      });
-  });
-  test("ERROR 400: returns bad request if review_id does not exist", () => {
-    return request(app)
-      .get("/api/reviews/500")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.message).toBe("Bad Request - review_id does not exist");
       });
   });
 });
