@@ -14,7 +14,7 @@ exports.selectReviewById = (review_id) => {
         return result.rows[0];
       } else {
         return Promise.reject({
-          status: 400,
+          status: 404,
           errorMessage: "Bad Request - review_id does not exist",
         });
       }
