@@ -1,4 +1,4 @@
 const { getCategories } = require("./categories-controller");
-const { getReviewById } = require("./reviews-controller");
+const { getReviewById, patchReviewVotes } = require("./reviews-controller");
 
-module.exports = { getCategories, getReviewById };
+module.exports = { getCategories, getReviewById, patchReviewVotes };
