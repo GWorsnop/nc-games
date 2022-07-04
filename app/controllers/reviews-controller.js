@@ -20,14 +20,14 @@ exports.patchReviewVotes = (req, res, next) => {
   if (inc_votes === undefined) {
     selectReviewById(review_id).then((selectedReview) => {
       res.status(400).send({
-        unchangedReview: selectedReview,
+        review: selectedReview,
         errorMessage: "Bad Request - Please provide inc_votes in request",
       });
     });
   } else
     updateReviewVotes(inc_votes, review_id)
-      .then((updatedReview) => {
-        res.status(200).send({ updatedReview });
+      .then((review) => {
+        res.status(200).send({ review });
       })
       .catch((err) => {
         next(err);

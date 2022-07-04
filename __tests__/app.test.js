@@ -70,7 +70,7 @@ describe("PATCH /api/reviews/:review_id", () => {
       .expect(200)
       .then(({ body }) => {
         expect(body).toEqual({
-          updatedReview: {
+          review: {
             review_id: 1,
             title: "Agricola",
             category: "euro game",
@@ -92,7 +92,7 @@ describe("PATCH /api/reviews/:review_id", () => {
       .then(({ body }) => {
         expect(body).toEqual({
           errorMessage: "Bad Request - Please provide inc_votes in request",
-          unchangedReview: {
+          review: {
             review_id: 1,
             title: "Agricola",
             category: "euro game",
