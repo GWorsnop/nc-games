@@ -27,4 +27,12 @@ describe("GET: /api/categories", () => {
         });
       });
   });
+  test("ERROR 404: returns bad path if wrong endpoint written", () => {
+    return request(app)
+      .get("/api/categorys")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Path not found");
+      });
+  });
 });
