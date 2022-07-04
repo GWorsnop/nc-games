@@ -1,11 +1,16 @@
 const express = require("express");
-const { getCategories, getReviewById } = require("./controllers/index");
+const {
+  getCategories,
+  getReviewById,
+  getUsers,
+} = require("./controllers/index");
 const app = express();
 
 app.use(express.json());
 
 app.get("/api/categories", getCategories);
 app.get("/api/reviews/:review_id", getReviewById);
+app.get("/api/users/", getUsers);
 
 app.use("*", (req, res) => {
   res.status(404).send({ message: "Path not found" });
