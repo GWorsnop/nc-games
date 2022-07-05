@@ -322,7 +322,7 @@ describe("GET: /api/reviews", () => {
   });
   test("400: bad request if sort_by category does not exist", () => {
     return request(app)
-      .get("/api/reviews/?sort_by=George")
+      .get("/api/reviews?sort_by=George")
       .expect(400)
       .then(({ body }) => {
         expect(body.message).toEqual("Bad request, incorrect sort_by");
@@ -330,7 +330,15 @@ describe("GET: /api/reviews", () => {
   });
   test("400: bad request if method is wrong", () => {
     return request(app)
-      .get("/api/reviews/?George=asc")
+      .get("/api/reviews?George=asc")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toEqual("Bad request, incorrect method");
+      });
+  });
+  test("400: bad request if method is wrong with multiple queries", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=review_id&George=asc")
       .expect(400)
       .then(({ body }) => {
         expect(body.message).toEqual("Bad request, incorrect method");
