@@ -151,6 +151,37 @@ describe("GET: /api/users", () => {
   });
 });
 
+describe("GET: /api/reviews/:review_id/comments", () => {
+  test("200: returns array of comments for the given review_id", () => {
+    return request(app)
+      .get("/api/reviews/3/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body.comments)).toBe(true);
+        expect(body.comments.length).toBe(3);
+        body.comments.forEach((comment) => {
+          expect.objectContaining({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            review_id: expect.any(Number),
+          });
+        });
+      });
+  });
+  test("200: returns empty array when there are no comments for this review_id", () => {
+    return request(app)
+      .get("/api/reviews/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body.comments)).toBe(true);
+        expect(body.comments.length).toBe(0);
+      });
+  });
+});
+
 describe("Generic errors of API", () => {
   test("ERROR 404: returns bad path if wrong endpoint written", () => {
     return request(app)
