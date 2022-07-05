@@ -117,7 +117,7 @@ describe("PATCH /api/reviews/:review_id", () => {
       .expect(422)
       .then(({ body }) => {
         expect(body.message).toBe(
-          "Unprocessable Entity - inc_votes must be a number"
+          "Unprocessable Entity - request must be a number"
         );
       });
   });
@@ -132,6 +132,7 @@ describe("PATCH /api/reviews/:review_id", () => {
       });
   });
 });
+
 describe("GET: /api/users", () => {
   test("200: returns array of user objects with correct keys", () => {
     return request(app)
@@ -147,6 +148,53 @@ describe("GET: /api/users", () => {
             avatar_url: expect.any(String),
           });
         });
+      });
+  });
+});
+
+describe("GET: /api/reviews/:review_id/comments", () => {
+  test("200: returns array of comments for the given review_id", () => {
+    return request(app)
+      .get("/api/reviews/3/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body.comments)).toBe(true);
+        expect(body.comments.length).toBe(3);
+        expect(body.comments[0]).toEqual({
+          comment_id: 2,
+          votes: 13,
+          created_at: "2021-01-18T10:09:05.410Z",
+          author: "mallionaire",
+          body: "My dog loved this game too!",
+          review_id: 3,
+        });
+      });
+  });
+  test("200: returns empty array when there are no comments for this review_id", () => {
+    return request(app)
+      .get("/api/reviews/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body.comments)).toBe(true);
+        expect(body.comments.length).toBe(0);
+      });
+  });
+  test("ERROR 422: returns error if review_id is incorrect", () => {
+    return request(app)
+      .get("/api/reviews/banana/comments")
+      .expect(422)
+      .then(({ body }) => {
+        expect(body.message).toBe(
+          "Unprocessable Entity - request must be a number"
+        );
+      });
+  });
+  test("ERROR 404: returns review does not exist if review_id does not exist", () => {
+    return request(app)
+      .get("/api/reviews/500/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad Request - review_id does not exist");
       });
   });
 });

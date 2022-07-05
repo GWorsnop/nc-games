@@ -4,6 +4,7 @@ const {
   getReviewById,
   patchReviewVotes,
   getUsers,
+  getComments,
   getReviews,
 } = require("./controllers/index");
 const app = express();
@@ -14,6 +15,7 @@ app.get("/api/categories", getCategories);
 app.get("/api/reviews/:review_id", getReviewById);
 app.patch("/api/reviews/:review_id", patchReviewVotes);
 app.get("/api/users/", getUsers);
+app.get("/api/reviews/:review_id/comments", getComments);
 app.get("/api/reviews", getReviews);
 
 app.use("*", (req, res) => {
@@ -30,7 +32,7 @@ app.use((err, req, res, next) => {
   if (err.code === "22P02") {
     res
       .status(422)
-      .send({ message: "Unprocessable Entity - inc_votes must be a number" });
+      .send({ message: "Unprocessable Entity - request must be a number" });
   } else next(err);
 });
 

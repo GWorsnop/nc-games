@@ -5,11 +5,13 @@ const {
   getReviews,
 } = require("./reviews-controller");
 const { getUsers } = require("./users-controller");
+const { getComments } = require("./comments-controller");
 
 module.exports = {
   getCategories,
   getReviewById,
   patchReviewVotes,
   getUsers,
+  getComments,
   getReviews,
 };
