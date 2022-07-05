@@ -38,3 +38,9 @@ exports.updateReviewVotes = (inc_votes, review_id) => {
       }
     });
 };
+
+exports.selectReviews = () => {
+  return connection.query("SELECT * FROM reviews").then((result) => {
+    return result.rows;
+  });
+};
