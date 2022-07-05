@@ -32,7 +32,7 @@ app.use((err, req, res, next) => {
   if (err.code === "22P02") {
     res
       .status(422)
-      .send({ message: "Unprocessable Entity - inc_votes must be a number" });
+      .send({ message: "Unprocessable Entity - request must be a number" });
   } else next(err);
 });
 
