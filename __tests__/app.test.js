@@ -329,6 +329,30 @@ describe("POST: /api/reviews/:review_id/comments", () => {
   });
 });
 
+describe.only("DELETE: /api/comments/:comment_id", () => {
+  test("204: responds with 204 and returns nothing", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+  test("ERROR 404: returns comment does not exist if comment_id does not exist", () => {
+    return request(app)
+      .delete("/api/comments/500")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Not Found - comment_id does not exist");
+      });
+  });
+  test("ERROR 422: returns error if review_id is not a number", () => {
+    return request(app)
+      .delete("/api/comments/banana")
+      .expect(422)
+      .then(({ body }) => {
+        expect(body.message).toBe(
+          "Unprocessable Entity - request must be a number"
+        );
+      });
+  });
+});
+
 describe("Generic errors of API", () => {
   test("ERROR 404: returns bad path if wrong endpoint written", () => {
     return request(app)
