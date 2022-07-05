@@ -41,3 +41,16 @@ exports.updateReviewVotes = (inc_votes, review_id) => {
       }
     });
 };
+
+exports.selectReviews = () => {
+  return connection
+    .query(
+      `
+  SELECT * FROM reviews
+  ORDER BY created_at DESC
+  `
+    )
+    .then((result) => {
+      return result.rows;
+    });
+};

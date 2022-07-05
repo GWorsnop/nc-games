@@ -132,6 +132,7 @@ describe("PATCH /api/reviews/:review_id", () => {
       });
   });
 });
+
 describe("GET: /api/users", () => {
   test("200: returns array of user objects with correct keys", () => {
     return request(app)
@@ -178,6 +179,42 @@ describe("GET: /api/reviews/:review_id/comments", () => {
       .then(({ body }) => {
         expect(Array.isArray(body.comments)).toBe(true);
         expect(body.comments.length).toBe(0);
+      });
+  });
+});
+
+describe("GET: /api/reviews", () => {
+  test("200: returns array of review objects with correct keys", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body.reviews)).toBe(true);
+        body.reviews.forEach((review) => {
+          expect.objectContaining({
+            review_id: expect.any(Number),
+            title: expect.any(String),
+            category: expect.any(String),
+            designer: expect.any(String),
+            owner: expect.any(String),
+            review_body: expect.any(String),
+            review_img_url: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(Number),
+          });
+        });
+      });
+  });
+  test("200: returns reviews ordered by date descending by default", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.reviews).toBeSortedBy("created_at", {
+          descending: true,
+          coerce: true,
+        });
       });
   });
 });
