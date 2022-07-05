@@ -42,15 +42,85 @@ exports.updateReviewVotes = (inc_votes, review_id) => {
     });
 };
 
-exports.selectReviews = () => {
-  return connection
-    .query(
-      `
-  SELECT * FROM reviews
-  ORDER BY created_at DESC
-  `
-    )
-    .then((result) => {
-      return result.rows;
+exports.selectReviews = (query = { sort_by: "created_at" }) => {
+  let methods = ["sort_by", "order", "category"];
+  let searchSort_by = "created_at";
+  let searchOrder = "DESC";
+  let whereStr = "";
+  const request = Object.keys(query);
+  if (!methods.includes(request[0])) {
+    return Promise.reject({
+      status: 400,
+      errorMessage: "Bad request, incorrect method",
     });
+  }
+  if ("sort_by" in query) {
+    const sort_by = query.sort_by;
+    let sortByOptions = [
+      "review_id",
+      "title",
+      "category",
+      "designer",
+      "owner",
+      "review_body",
+      "review_img_url",
+      "created_at",
+      "votes",
+      "comment_count",
+    ];
+    searchSort_by = sortByOptions.find(
+      (elem) => elem.toLowerCase() === sort_by
+    );
+    if (!sortByOptions.includes(sort_by)) {
+      return Promise.reject({
+        status: 400,
+        errorMessage: "Bad request, incorrect sort_by",
+      });
+    }
+  }
+  if ("order" in query) {
+    const order = query.order;
+    let orderOptions = ["asc", "desc"];
+    searchOrder = orderOptions.find((elem) => elem.toLowerCase() === order);
+  }
+  if ("category" in query) {
+    const category = query.category;
+    return connection
+      .query(
+        `
+  SELECT * FROM categories
+  WHERE slug = $1
+  `,
+        [category]
+      )
+      .then((result) => {
+        if (result.rowCount > 0) {
+          whereStr = `WHERE category = '${category}'`;
+        }
+      })
+      .then(() => {
+        return connection
+          .query(
+            `
+          SELECT * FROM reviews
+          ${whereStr}
+          ORDER BY ${searchSort_by} ${searchOrder}
+            `
+          )
+          .then((result) => {
+            return result.rows;
+          });
+      });
+  } else
+    return connection
+      .query(
+        `
+  SELECT * FROM reviews
+  ${whereStr}
+  ORDER BY ${searchSort_by} ${searchOrder}
+  `
+      )
+      .then((result) => {
+        return result.rows;
+      });
 };
