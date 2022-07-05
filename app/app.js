@@ -4,6 +4,7 @@ const {
   getReviewById,
   patchReviewVotes,
   getUsers,
+  getComments,
 } = require("./controllers/index");
 const app = express();
 
@@ -13,6 +14,7 @@ app.get("/api/categories", getCategories);
 app.get("/api/reviews/:review_id", getReviewById);
 app.patch("/api/reviews/:review_id", patchReviewVotes);
 app.get("/api/users/", getUsers);
+app.get("/api/reviews/:review_id/comments", getComments);
 
 app.use("*", (req, res) => {
   res.status(404).send({ message: "Path not found" });
