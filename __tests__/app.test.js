@@ -160,15 +160,13 @@ describe("GET: /api/reviews/:review_id/comments", () => {
       .then(({ body }) => {
         expect(Array.isArray(body.comments)).toBe(true);
         expect(body.comments.length).toBe(3);
-        body.comments.forEach((comment) => {
-          expect.objectContaining({
-            comment_id: expect.any(Number),
-            votes: expect.any(Number),
-            created_at: expect.any(String),
-            author: expect.any(String),
-            body: expect.any(String),
-            review_id: expect.any(Number),
-          });
+        expect(body.comments[0]).toEqual({
+          comment_id: 2,
+          votes: 13,
+          created_at: "2021-01-18T10:09:05.410Z",
+          author: "mallionaire",
+          body: "My dog loved this game too!",
+          review_id: 3,
         });
       });
   });
