@@ -233,6 +233,27 @@ describe("GET: /api/reviews", () => {
         });
       });
   });
+  test("200: endpoint now accepts query sort_by", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=review_id")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body.reviews)).toBe(true);
+        expect(body.reviews.length).toBe(13);
+        expect(body.reviews[0]).toEqual({
+          review_id: 1,
+          title: "",
+          category: "",
+          designer: "",
+          owner: "",
+          review_body: "",
+          review_img_url: "",
+          created_at: "",
+          votes: "",
+          comment_count: "",
+        });
+      });
+  });
 });
 
 describe("Generic errors of API", () => {
