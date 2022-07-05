@@ -240,18 +240,100 @@ describe("GET: /api/reviews", () => {
       .then(({ body }) => {
         expect(Array.isArray(body.reviews)).toBe(true);
         expect(body.reviews.length).toBe(13);
-        expect(body.reviews[0]).toEqual({
-          review_id: 1,
-          title: "",
-          category: "",
-          designer: "",
-          owner: "",
-          review_body: "",
-          review_img_url: "",
-          created_at: "",
-          votes: "",
-          comment_count: "",
+        expect(body.reviews).toBeSortedBy("review_id", {
+          descending: true,
+          coerce: true,
         });
+        expect(body.reviews[0]).toEqual({
+          category: "social deduction",
+          created_at: "1970-01-10T02:08:38.400Z",
+          designer: "Klaus Teuber",
+          owner: "mallionaire",
+          review_body:
+            "You have stumbled across an uncharted island rich in natural resources, but you are not alone; other adventurers have come ashore too, and the race to settle the island of Catan has begun! Whether you exert military force, build a road to rival the Great Wall, trade goods with ships from the outside world, or some combination of all three, the aim is the same: to dominate the island. Will you prevail? Proceed strategically, trade wisely, and may the odds be in favour.",
+          review_id: 13,
+          review_img_url:
+            "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
+          title: "Settlers of Catan: Don't Settle For Less",
+          votes: 16,
+        });
+      });
+  });
+  test("200: endpoint now accepts query order", () => {
+    return request(app)
+      .get("/api/reviews?order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body.reviews)).toBe(true);
+        expect(body.reviews.length).toBe(13);
+        expect(body.reviews).toBeSortedBy("created_at", {
+          descending: false,
+          coerce: true,
+        });
+        expect(body.reviews[0]).toEqual({
+          category: "social deduction",
+          created_at: "1970-01-10T02:08:38.400Z",
+          designer: "Klaus Teuber",
+          owner: "mallionaire",
+          review_body:
+            "You have stumbled across an uncharted island rich in natural resources, but you are not alone; other adventurers have come ashore too, and the race to settle the island of Catan has begun! Whether you exert military force, build a road to rival the Great Wall, trade goods with ships from the outside world, or some combination of all three, the aim is the same: to dominate the island. Will you prevail? Proceed strategically, trade wisely, and may the odds be in favour.",
+          review_id: 13,
+          review_img_url:
+            "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
+          title: "Settlers of Catan: Don't Settle For Less",
+          votes: 16,
+        });
+      });
+  });
+  test("200: returns with all reviews with same category", () => {
+    return request(app)
+      .get("/api/reviews?category=dexterity")
+      .expect(200)
+      .then(({ body }) => {
+        body.reviews.forEach((review) => {
+          expect(review.category).toBe("dexterity");
+        });
+      });
+  });
+  test("200: endpoint now accepts multiple queries", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=review_id&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body.reviews)).toBe(true);
+        expect(body.reviews.length).toBe(13);
+        expect(body.reviews).toBeSortedBy("review_id", {
+          descending: false,
+          coerce: true,
+        });
+        expect(body.reviews[0]).toEqual({
+          category: "euro game",
+          created_at: "2021-01-18T10:00:20.514Z",
+          designer: "Uwe Rosenberg",
+          owner: "mallionaire",
+          review_body: "Farmyard fun!",
+          review_id: 1,
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          title: "Agricola",
+          votes: 1,
+        });
+      });
+  });
+  test("400: bad request if sort_by category does not exist", () => {
+    return request(app)
+      .get("/api/reviews/?sort_by=George")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toEqual("Bad request, incorrect sort_by");
+      });
+  });
+  test("400: bad request if method is wrong", () => {
+    return request(app)
+      .get("/api/reviews/?George=asc")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toEqual("Bad request, incorrect method");
       });
   });
 });
