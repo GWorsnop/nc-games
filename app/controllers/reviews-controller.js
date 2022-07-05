@@ -47,7 +47,12 @@ exports.getReviews = (req, res, next) => {
         next(err);
       });
   } else
-    selectReviews().then((reviews) => {
-      res.status(200).send({ reviews });
-    });
+    selectReviews()
+      .then((reviews) => {
+        res.status(200).send({ reviews });
+      })
+      .catch((err) => {
+        console.log(err, "in controller 2!!!");
+        next(err);
+      });
 };
