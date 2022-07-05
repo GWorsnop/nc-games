@@ -179,7 +179,7 @@ describe("GET: /api/reviews", () => {
       .get("/api/reviews")
       .expect(200)
       .then(({ body }) => {
-        expect(body).toBeSortedBy("date", {
+        expect(body.reviews).toBeSortedBy("created_at", {
           descending: true,
           coerce: true,
         });
