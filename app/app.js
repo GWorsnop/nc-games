@@ -6,6 +6,7 @@ const {
   getUsers,
   getComments,
   getReviews,
+  postComment,
 } = require("./controllers/index");
 const app = express();
 
@@ -17,6 +18,7 @@ app.patch("/api/reviews/:review_id", patchReviewVotes);
 app.get("/api/users/", getUsers);
 app.get("/api/reviews/:review_id/comments", getComments);
 app.get("/api/reviews", getReviews);
+app.post("/api/reviews/:review_id/comments", postComment);
 
 app.use("*", (req, res) => {
   res.status(404).send({ message: "Path not found" });
@@ -33,6 +35,16 @@ app.use((err, req, res, next) => {
     res
       .status(422)
       .send({ message: "Unprocessable Entity - request must be a number" });
+  } else next(err);
+});
+app.use((err, req, res, next) => {
+  if (err.code === "23503" && err.constraint === "comments_author_fkey") {
+    res.status(400).send({ message: "Bad Request - Username does not exist" });
+  } else if (
+    err.code === "23503" &&
+    err.constraint === "comments_review_id_fkey"
+  ) {
+    res.status(404).send({ message: "Not Found - review_id does not exist" });
   } else next(err);
 });
 

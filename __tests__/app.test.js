@@ -57,7 +57,7 @@ describe("GET: /api/reviews/:review_id", () => {
       .get("/api/reviews/500")
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe("Bad Request - review_id does not exist");
+        expect(body.message).toBe("Not Found - review_id does not exist");
       });
   });
 });
@@ -128,7 +128,7 @@ describe("PATCH /api/reviews/:review_id", () => {
       .send(reviewUpdate)
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe("Bad Request - review_id does not exist");
+        expect(body.message).toBe("Not Found - review_id does not exist");
       });
   });
 });
@@ -194,7 +194,7 @@ describe("GET: /api/reviews/:review_id/comments", () => {
       .get("/api/reviews/500/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.message).toBe("Bad Request - review_id does not exist");
+        expect(body.message).toBe("Not Found - review_id does not exist");
       });
   });
 });
@@ -338,6 +338,100 @@ describe("GET: /api/reviews", () => {
   });
 });
 
+describe("POST: /api/reviews/:review_id/comments", () => {
+  test("201: adds comment to the database and responds with newly created comment", () => {
+    const newComment = {
+      username: "mallionaire",
+      body: "Amazing! I love it.",
+    };
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(newComment)
+      .expect(201)
+      .then((res) => {
+        const postedComment = res.body.comment;
+        expect(postedComment).toEqual(
+          expect.objectContaining({
+            comment_id: 7,
+            body: "Amazing! I love it.",
+            votes: 0,
+            author: "mallionaire",
+            review_id: 1,
+            created_at: expect.any(String),
+          })
+        );
+      });
+  });
+  test("400: does not post if username is incorrect", () => {
+    const newComment = {
+      username: "george",
+      body: "Amazing! I love it.",
+    };
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad Request - Username does not exist");
+      });
+  });
+  test("400: does not post if body is missing", () => {
+    const newComment = {
+      username: "mallionaire",
+    };
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad Request - Missing fields");
+      });
+  });
+  test("404: does not post if review does not exist", () => {
+    const newComment = {
+      username: "mallionaire",
+      body: "Incredible!!!",
+    };
+    return request(app)
+      .post("/api/reviews/500/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Not Found - review_id does not exist");
+      });
+  });
+  test("ERROR 422: returns error if review_id is incorrect", () => {
+    const newComment = {
+      username: "mallionaire",
+      body: "Incredible!!!",
+    };
+    return request(app)
+      .post("/api/reviews/banana/comments")
+      .expect(422)
+      .send(newComment)
+      .then(({ body }) => {
+        expect(body.message).toBe(
+          "Unprocessable Entity - request must be a number"
+        );
+      });
+  });
+  test("ERROR 422: returns error if body is incorrect", () => {
+    const newComment = {
+      username: "mallionaire",
+      body: 12345,
+    };
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .expect(422)
+      .send(newComment)
+      .then(({ body }) => {
+        expect(body.message).toBe(
+          "Unprocessable Entity - body must be a suitable review"
+        );
+      });
+  });
+});
+
 describe("Generic errors of API", () => {
   test("ERROR 404: returns bad path if wrong endpoint written", () => {
     return request(app)
@@ -348,3 +442,5 @@ describe("Generic errors of API", () => {
       });
   });
 });
+
+//

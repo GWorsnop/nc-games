@@ -18,7 +18,7 @@ exports.selectReviewById = (review_id) => {
       } else {
         return Promise.reject({
           status: 404,
-          errorMessage: "Bad Request - review_id does not exist",
+          errorMessage: "Not Found - review_id does not exist",
         });
       }
     });
@@ -36,7 +36,7 @@ exports.updateReviewVotes = (inc_votes, review_id) => {
       } else {
         return Promise.reject({
           status: 404,
-          errorMessage: "Bad Request - review_id does not exist",
+          errorMessage: "Not Found - review_id does not exist",
         });
       }
     });
