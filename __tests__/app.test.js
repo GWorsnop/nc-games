@@ -8,6 +8,7 @@ const {
 const connection = require("../db/connection");
 const request = require("supertest");
 const app = require("../app/app");
+const endpoints = require("../endpoints.json");
 
 beforeEach(() => seed({ categoryData, commentData, reviewData, userData }));
 afterAll(() => connection.end());
@@ -448,6 +449,17 @@ describe("POST: /api/reviews/:review_id/comments", () => {
         expect(body.message).toBe(
           "Unprocessable Entity - body must be a suitable review"
         );
+      });
+  });
+});
+
+describe("GET /api", () => {
+  test("200: returns an object with the list of endpoints", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toEqual(endpoints);
       });
   });
 });
