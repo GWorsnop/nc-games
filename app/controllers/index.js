@@ -10,7 +10,7 @@ const {
   postComment,
   deleteComment,
 } = require("./comments-controller");
-const { getEndpoints } = require("./endpoints-controller");
+const { getEndpoints, getWelcomeMessage } = require("./endpoints-controller");
 
 module.exports = {
   getCategories,
@@ -22,4 +22,5 @@ module.exports = {
   postComment,
   deleteComment,
   getEndpoints,
+  getWelcomeMessage,
 };
