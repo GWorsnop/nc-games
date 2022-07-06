@@ -7,6 +7,7 @@ const {
   getComments,
   getReviews,
   postComment,
+  getEndpoints,
 } = require("./controllers/index");
 const app = express();
 
@@ -19,6 +20,7 @@ app.get("/api/users/", getUsers);
 app.get("/api/reviews/:review_id/comments", getComments);
 app.get("/api/reviews", getReviews);
 app.post("/api/reviews/:review_id/comments", postComment);
+app.get("/api", getEndpoints);
 
 app.use("*", (req, res) => {
   res.status(404).send({ message: "Path not found" });
