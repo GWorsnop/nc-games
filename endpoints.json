@@ -1,6 +1,6 @@
 {
   "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api"
+    "description": "serves up a json representation of all the available endpoints of the api, including functionality"
   },
   "GET /api/categories": {
     "description": "serves an array of all categories",
@@ -30,5 +30,95 @@
         }
       ]
     }
+  },
+  "GET /api/reviews:review_id": {
+    "description": "serves a specific review based on parameter of review_id",
+    "parameters": {"review_id": "integer"},
+    "queries": [],
+    "exampleResponse": {
+      "review": {
+        "review_id": 1,
+        "title": "Agricola",
+        "category": "euro game",
+        "designer": "Uwe Rosenberg",
+        "owner": "mallionaire",
+        "review_body": "Farmyard fun!",
+        "review_img_url":
+          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        "created_at": "2021-01-18T10:00:20.514Z",
+        "votes": 1,
+        "comment_count": 0
+      }
+    }
+  },
+  "PATCH /api/reviews:review_id": {
+    "description": "edits a specific review's votes based on parameters of review_id",
+    "parameters": {"review_id": "integer"},
+    "body": {"inc_votes" : "integer"},
+    "queries": [],
+    "exampleResponse": {
+      "review": {
+        "review_id": 1,
+        "title": "Agricola",
+        "category": "euro game",
+        "designer": "Uwe Rosenberg",
+        "owner": "mallionaire",
+        "review_body": "Farmyard fun!",
+        "review_img_url":
+          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        "created_at": "2021-01-18T10:00:20.514Z",
+        "votes": 3,
+        "comment_count": 0
+      }
+    }
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "parameters": {},
+    "queries": [],
+    "exampleResponse": { 
+      "users": [
+        {
+        "username": "mallionaire",
+        "name": "haz",
+        "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        }
+      ]
+    }
+  },
+   "GET /api/reviews:review_id/comments": {
+    "description": "serves an array of comments for the given review based on parameter of review_id",
+    "parameters": {"review_id": "integer"},
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
+        {
+        "comment_id": 2,
+          "votes": 13,
+          "created_at": "2021-01-18T10:09:05.410Z",
+          "author": "mallionaire",
+          "body": "My dog loved this game too!",
+          "review_id": 3
+        }
+      ]
+    }
+  },
+  "POST /api/reviews:review_id/comments": {
+    "description": "adds comment on given review based on parameter of review_id. NOTE - username must be existing user",
+    "parameters": {"review_id": "integer"},
+    "queries": [],
+    "body": {"username" : "string", "body": "string"},
+    "exampleResponse": {
+      "comment":
+      {
+        "comment_id": 7,
+        "body": "Amazing! I love it.",
+        "votes": 0,
+        "author": "mallionaire",
+        "review_id": 1,
+        "created_at": "2022-07-06T11:32:54.696Z"
+      }
+    }
   }
 }
+
