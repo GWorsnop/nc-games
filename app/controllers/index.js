@@ -6,6 +6,7 @@ const {
 } = require("./reviews-controller");
 const { getUsers } = require("./users-controller");
 const { getComments, postComment } = require("./comments-controller");
+const { getEndpoints } = require("./endpoints-controller");
 
 module.exports = {
   getCategories,
@@ -15,4 +16,5 @@ module.exports = {
   getComments,
   getReviews,
   postComment,
+  getEndpoints,
 };
