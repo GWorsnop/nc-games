@@ -19,6 +19,7 @@ describe("GET: /api/categories", () => {
       .expect(200)
       .then(({ body }) => {
         expect(Array.isArray(body.categories)).toBe(true);
+        expect(body.categories.length).toBeGreaterThan(0);
         body.categories.forEach((category) => {
           expect.objectContaining({
             slug: expect.any(String),
@@ -206,6 +207,7 @@ describe("GET: /api/reviews", () => {
       .expect(200)
       .then(({ body }) => {
         expect(Array.isArray(body.reviews)).toBe(true);
+        expect(body.reviews.length).toBeGreaterThan(0);
         body.reviews.forEach((review) => {
           expect.objectContaining({
             review_id: expect.any(Number),
@@ -227,6 +229,7 @@ describe("GET: /api/reviews", () => {
       .get("/api/reviews")
       .expect(200)
       .then(({ body }) => {
+        expect(body.reviews.length).toBeGreaterThan(0);
         expect(body.reviews).toBeSortedBy("created_at", {
           descending: true,
           coerce: true,
@@ -290,6 +293,7 @@ describe("GET: /api/reviews", () => {
       .get("/api/reviews?category=dexterity")
       .expect(200)
       .then(({ body }) => {
+        expect(body.reviews.length).toBeGreaterThan(0);
         body.reviews.forEach((review) => {
           expect(review.category).toBe("dexterity");
         });
@@ -334,6 +338,14 @@ describe("GET: /api/reviews", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.message).toEqual("Bad request, incorrect method");
+      });
+  });
+  test("400: bad request if order is wrong", () => {
+    return request(app)
+      .get("/api/reviews?order=George")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toEqual("Bad request, incorrect order");
       });
   });
   test("400: bad request if method is wrong with multiple queries", () => {
