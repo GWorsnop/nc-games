@@ -477,7 +477,7 @@ describe("DELETE: /api/comments/:comment_id", () => {
   });
 });
 
-escribe("GET /api", () => {
+describe("GET /api", () => {
   test("200: returns an object with the list of endpoints", () => {
     return request(app)
       .get("/api")
