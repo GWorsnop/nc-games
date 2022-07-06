@@ -35,8 +35,23 @@ exports.patchReviewVotes = (req, res, next) => {
       });
 };
 
-exports.getReviews = (req, res) => {
-  selectReviews().then((reviews) => {
-    res.status(200).send({ reviews });
-  });
+exports.getReviews = (req, res, next) => {
+  const query = req.query;
+  const queryLength = Object.keys(query).length;
+  if (queryLength > 0) {
+    selectReviews(query)
+      .then((reviews) => {
+        res.status(200).send({ reviews });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  } else
+    selectReviews()
+      .then((reviews) => {
+        res.status(200).send({ reviews });
+      })
+      .catch((err) => {
+        next(err);
+      });
 };
