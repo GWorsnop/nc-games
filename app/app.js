@@ -7,6 +7,7 @@ const {
   getComments,
   getReviews,
   postComment,
+  deleteComment,
   getEndpoints,
 } = require("./controllers/index");
 const app = express();
@@ -20,6 +21,7 @@ app.get("/api/users/", getUsers);
 app.get("/api/reviews/:review_id/comments", getComments);
 app.get("/api/reviews", getReviews);
 app.post("/api/reviews/:review_id/comments", postComment);
+app.delete("/api/comments/:comment_id", deleteComment);
 app.get("/api", getEndpoints);
 
 app.use("*", (req, res) => {
