@@ -5,7 +5,11 @@ const {
   getReviews,
 } = require("./reviews-controller");
 const { getUsers } = require("./users-controller");
-const { getComments, postComment } = require("./comments-controller");
+const {
+  getComments,
+  postComment,
+  deleteComment,
+} = require("./comments-controller");
 
 module.exports = {
   getCategories,
@@ -15,4 +19,5 @@ module.exports = {
   getComments,
   getReviews,
   postComment,
+  deleteComment,
 };
