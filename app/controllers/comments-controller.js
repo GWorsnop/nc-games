@@ -1,4 +1,9 @@
-const { selectComments, insertComment } = require("../models/comments-model");
+const {
+  selectComments,
+  insertComment,
+  removeComment,
+  getCommentById,
+} = require("../models/comments-model");
 const { selectReviewById } = require("../models/reviews-model");
 
 exports.getComments = async (req, res, next) => {
@@ -22,4 +27,21 @@ exports.postComment = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+};
+
+exports.deleteComment = (req, res, next) => {
+  const { comment_id } = req.params;
+  return getCommentById(comment_id)
+    .then((result) => {
+      removeComment(comment_id)
+        .then(() => {
+          res.status(204).send();
+        })
+        .catch((err) => {
+          next(err);
+        });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
