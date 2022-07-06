@@ -1,4 +1,5 @@
 const connection = require("../../db/connection");
+const { selectCategoryByQuery } = require("../models/categories-model");
 
 exports.selectReviewById = (review_id) => {
   return connection
@@ -47,6 +48,7 @@ exports.selectReviews = (query = { sort_by: "created_at" }) => {
   let searchSort_by = "created_at";
   let searchOrder = "DESC";
   let whereStr = "";
+  const queryArr = [];
   let errorFound = false;
   const request = Object.keys(query);
   request.forEach((element) => {
@@ -83,41 +85,38 @@ exports.selectReviews = (query = { sort_by: "created_at" }) => {
       const order = query.order;
       let orderOptions = ["asc", "desc"];
       searchOrder = orderOptions.find((elem) => elem.toLowerCase() === order);
+      if (!orderOptions.includes(order)) {
+        return Promise.reject({
+          status: 400,
+          errorMessage: "Bad request, incorrect order",
+        });
+      }
     }
     if ("category" in query) {
       const category = query.category;
-      return connection
-        .query(
-          `
-  SELECT * FROM categories
-  WHERE slug = $1
-  `,
-          [category]
-        )
+      return selectCategoryByQuery(category)
         .then((result) => {
-          if (result.rowCount > 0) {
-            whereStr = `WHERE category = '${category}'`;
+          if (result.length > 0) {
+            whereStr = `WHERE category = $1`;
+            queryArr.push(category);
           }
-        })
-        .then(() => {
-          return connection
-            .query(
-              `
-          SELECT * FROM reviews
-          ${whereStr}
-          ORDER BY ${searchSort_by} ${searchOrder}
+          return connection.query(
             `
-            )
-            .then((result) => {
-              return result.rows;
-            });
+            SELECT * FROM reviews
+            ${whereStr}
+            ORDER BY ${searchSort_by} ${searchOrder}
+            `,
+            queryArr
+          );
+        })
+        .then((result) => {
+          return result.rows;
         });
     } else
       return connection
         .query(
           `
   SELECT * FROM reviews
-  ${whereStr}
   ORDER BY ${searchSort_by} ${searchOrder}
   `
         )
