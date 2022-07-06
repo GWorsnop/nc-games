@@ -8,6 +8,6 @@ exports.getEndpoints = (req, res, next) => {
 exports.getWelcomeMessage = (req, res, next) => {
   res.status(200).send({
     message:
-      "Welcome to nc-games, visit /api/endpoints for information on how to interact with this api",
+      "Welcome to nc-games, visit /api for information on how to interact with this api",
   });
 };
