@@ -14,6 +14,27 @@ exports.selectComments = (review_id) => {
     });
 };
 
+exports.getCommentById = (comment_id) => {
+  return connection
+    .query(
+      `
+    SELECT * FROM comments 
+    WHERE comment_id = $1
+    `,
+      [comment_id]
+    )
+    .then((result) => {
+      if (result.rowCount > 0) {
+        return result;
+      } else {
+        return Promise.reject({
+          status: 404,
+          errorMessage: "Not Found - comment_id does not exist",
+        });
+      }
+    });
+};
+
 exports.insertComment = (review_id, newComment) => {
   const { username, body } = newComment;
   if (username && body) {
@@ -44,27 +65,11 @@ exports.insertComment = (review_id, newComment) => {
 };
 
 exports.removeComment = (comment_id) => {
-  return connection
-    .query(
-      `
-    SELECT * FROM comments 
-    WHERE comment_id = $1
-    `,
-      [comment_id]
-    )
-    .then((result) => {
-      if (result.rowCount > 0) {
-        return connection.query(
-          `
+  return connection.query(
+    `
           DELETE FROM comments 
           WHERE comment_id = $1
           `,
-          [comment_id]
-        );
-      } else
-        return Promise.reject({
-          status: 404,
-          errorMessage: "Not Found - comment_id does not exist",
-        });
-    });
+    [comment_id]
+  );
 };
