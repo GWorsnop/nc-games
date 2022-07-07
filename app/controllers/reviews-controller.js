@@ -37,14 +37,15 @@ exports.patchReviewVotes = (req, res, next) => {
 };
 
 exports.getReviews = (req, res, next) => {
-  const query = req.query;
-  const queryLength = Object.keys(query).length;
+  const { sort_by, order, category, limit } = req.query;
+  const queryLength = Object.keys(sort_by, order, category, limit).length;
   if (queryLength > 0) {
     selectReviews(query)
       .then((reviews) => {
         res.status(200).send({ reviews });
       })
       .catch((err) => {
+        console.log(err);
         next(err);
       });
   } else

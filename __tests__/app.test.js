@@ -237,7 +237,7 @@ describe("GET: /api/reviews", () => {
         });
       });
   });
-  test("200: endpoint now accepts query sort_by", () => {
+  test.only("200: endpoint now accepts query sort_by", () => {
     return request(app)
       .get("/api/reviews?sort_by=review_id")
       .expect(200)
@@ -322,6 +322,32 @@ describe("GET: /api/reviews", () => {
             "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
           title: "Agricola",
           votes: 1,
+        });
+      });
+  });
+  test("200: endpoint now accepts query limit", () => {
+    return request(app)
+      .get("/api/reviews?limit=5")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body.reviews)).toBe(true);
+        expect(body.reviews.length).toBe(5);
+        expect(body.reviews).toBeSortedBy("created_at", {
+          descending: true,
+          coerce: true,
+        });
+        expect(body.reviews[0]).toEqual({
+          owner: "mallionaire",
+          category: "social deduction",
+          created_at: "2021-01-25T11:16:54.963Z",
+          designer: "Avery Wunzboogerz",
+          review_body:
+            "Consectetur incididunt aliquip sunt officia. Magna ex nulla consectetur laboris incididunt ea non qui. Enim id eiusmod irure dolor ipsum in tempor consequat amet ullamco. Occaecat fugiat sint fugiat mollit consequat pariatur consequat non exercitation dolore. Labore occaecat in magna commodo anim enim eiusmod eu pariatur ad duis magna. Voluptate ad et dolore ullamco anim sunt do. Qui exercitation tempor in in minim ullamco fugiat ipsum. Duis irure voluptate cupidatat do id mollit veniam culpa. Velit deserunt exercitation amet laborum nostrud dolore in occaecat minim amet nostrud sunt in. Veniam ut aliqua incididunt commodo sint in anim duis id commodo voluptate sit quis.",
+          review_id: 7,
+          review_img_url:
+            "https://images.pexels.com/photos/278888/pexels-photo-278888.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+          title: "Mollit elit qui incididunt veniam occaecat cupidatat",
+          votes: 9,
         });
       });
   });

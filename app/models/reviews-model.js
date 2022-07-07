@@ -44,20 +44,33 @@ exports.updateReviewVotes = (inc_votes, review_id) => {
     });
 };
 
-exports.selectReviews = (query = { sort_by: "created_at" }) => {
-  let methods = ["sort_by", "order", "category"];
+exports.selectReviews = (
+  sort_by = "created_at",
+  order,
+  category,
+  limit = 10
+) => {
+  let methods = ["sort_by", "order", "category", "limit"];
   let searchSort_by = "created_at";
   let searchOrder = "DESC";
   let whereStr = "";
   const queryArr = [];
   let errorFound = false;
-  const request = Object.keys(query);
+  const numberLimit = Number(limit);
+  console.log(numberLimit, "before!");
+  const request = [];
   request.forEach((element) => {
     if (!methods.includes(element)) {
       errorFound = true;
     }
   });
   if (!errorFound) {
+    if (limit === NaN) {
+      return Promise.reject({
+        status: 400,
+        errorMessage: "Bad request, limit must be a number",
+      });
+    }
     if ("sort_by" in query) {
       const sort_by = query.sort_by;
       let sortByOptions = [
@@ -104,7 +117,7 @@ exports.selectReviews = (query = { sort_by: "created_at" }) => {
           return connection.query(
             `
             SELECT * FROM reviews
-            ${whereStr}
+            $1
             ORDER BY ${searchSort_by} ${searchOrder}
             `,
             queryArr
@@ -113,17 +126,19 @@ exports.selectReviews = (query = { sort_by: "created_at" }) => {
         .then((result) => {
           return result.rows;
         });
-    } else
-      return connection
-        .query(
-          `
+    } else console.log(limit);
+    return connection
+      .query(
+        `
   SELECT * FROM reviews
   ORDER BY ${searchSort_by} ${searchOrder}
+  LIMIT ${limit}
   `
-        )
-        .then((result) => {
-          return result.rows;
-        });
+      )
+      .then((result) => {
+        console.log(result.rows.length);
+        return result.rows;
+      });
   } else
     return Promise.reject({
       status: 400,
