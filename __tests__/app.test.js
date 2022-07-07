@@ -488,7 +488,7 @@ describe("GET /api", () => {
   });
 });
 
-describe.only("GET: /api/users/:username", () => {
+describe("GET: /api/users/:username", () => {
   test("200: returns a user object, with correct properties", () => {
     return request(app)
       .get("/api/users/mallionaire")
@@ -510,6 +510,68 @@ describe.only("GET: /api/users/:username", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.message).toBe("Not Found - username does not exist");
+      });
+  });
+});
+
+describe("PATCH /api/comments/:comment_id", () => {
+  test("200, responds with the updated comment", () => {
+    const commentUpdate = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/2")
+      .send(commentUpdate)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toEqual({
+          comment: {
+            comment_id: 2,
+            votes: 14,
+            created_at: "2021-01-18T10:09:05.410Z",
+            author: "mallionaire",
+            body: "My dog loved this game too!",
+            review_id: 3,
+          },
+        });
+      });
+  });
+  test("ERROR 400, responds with the unchanged comment when passed no inc_votes", () => {
+    return request(app)
+      .patch("/api/comments/2")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).toEqual({
+          errorMessage: "Bad Request - Please provide inc_votes in request",
+          comment: {
+            comment_id: 2,
+            votes: 13,
+            created_at: "2021-01-18T10:09:05.410Z",
+            author: "mallionaire",
+            body: "My dog loved this game too!",
+            review_id: 3,
+          },
+        });
+      });
+  });
+  test("ERROR 422: if inc_votes is not a number", () => {
+    const commentUpdate = { inc_votes: "George" };
+    return request(app)
+      .patch("/api/reviews/2")
+      .send(commentUpdate)
+      .expect(422)
+      .then(({ body }) => {
+        expect(body.message).toBe(
+          "Unprocessable Entity - request must be a number"
+        );
+      });
+  });
+  test("ERROR 404: returns review does not exist if review_id does not exist", () => {
+    const commentUpdate = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/500")
+      .send(commentUpdate)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Not Found - comment_id does not exist");
       });
   });
 });
