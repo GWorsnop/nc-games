@@ -43,14 +43,23 @@ exports.updateReviewVotes = (inc_votes, review_id) => {
     });
 };
 
-exports.selectReviews = (query = { sort_by: "created_at" }) => {
-  let methods = ["sort_by", "order", "category"];
-  let searchSort_by = "created_at";
-  let searchOrder = "DESC";
-  let whereStr = "";
+exports.selectReviews = (input) => {
+  const {
+    sort_by = "created_at",
+    order = "DESC",
+    category,
+    limit = 10,
+    p = 1,
+  } = input;
+  const methods = ["sort_by", "order", "category", "limit", "p"];
   const queryArr = [];
-  if ("sort_by" in query) {
-    const sort_by = query.sort_by;
+  let whereStr = "";
+  let errorFound = false;
+  if (errorFound === true) {
+    return res.status(400).send({ message: "Bad request, incorrect method" });
+  }
+
+  if (sort_by) {
     let sortByOptions = [
       "review_id",
       "title",
@@ -63,9 +72,6 @@ exports.selectReviews = (query = { sort_by: "created_at" }) => {
       "votes",
       "comment_count",
     ];
-    searchSort_by = sortByOptions.find(
-      (elem) => elem.toLowerCase() === sort_by
-    );
     if (!sortByOptions.includes(sort_by)) {
       return Promise.reject({
         status: 400,
@@ -73,10 +79,8 @@ exports.selectReviews = (query = { sort_by: "created_at" }) => {
       });
     }
   }
-  if ("order" in query) {
-    const order = query.order;
-    let orderOptions = ["asc", "desc"];
-    searchOrder = orderOptions.find((elem) => elem.toLowerCase() === order);
+  if (order) {
+    let orderOptions = ["asc", "desc", "ASC", "DESC"];
     if (!orderOptions.includes(order)) {
       return Promise.reject({
         status: 400,
@@ -84,8 +88,8 @@ exports.selectReviews = (query = { sort_by: "created_at" }) => {
       });
     }
   }
-  if ("category" in query) {
-    const category = query.category;
+  console.log("hello!");
+  if (category) {
     return selectCategoryByQuery(category)
       .then((result) => {
         if (result.length > 0) {
@@ -94,9 +98,13 @@ exports.selectReviews = (query = { sort_by: "created_at" }) => {
         }
         return connection.query(
           `
-            SELECT * FROM reviews
+            SELECT *, COUNT(review_id) AS total_count
+            FROM reviews
             ${whereStr}
-            ORDER BY ${searchSort_by} ${searchOrder}
+            GROUP BY review_id
+            ORDER BY ${sort_by} ${order}
+            LIMIT ${limit}
+            OFFSET (${p} * ${limit} - ${limit})
             `,
           queryArr
         );
@@ -108,8 +116,11 @@ exports.selectReviews = (query = { sort_by: "created_at" }) => {
     return connection
       .query(
         `
-  SELECT * FROM reviews
-  ORDER BY ${searchSort_by} ${searchOrder}
+        SELECT *, SELECT (COUNT(*)::INT) AS total_count
+        FROM reviews
+        ORDER BY ${sort_by} ${order}
+        LIMIT ${limit}
+        OFFSET (${p} * ${limit} - ${limit})
   `
       )
       .then((result) => {

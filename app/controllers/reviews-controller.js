@@ -37,28 +37,16 @@ exports.patchReviewVotes = (req, res, next) => {
 };
 
 exports.getReviews = (req, res, next) => {
-  const { sort_by, order, category, limit } = req.query;
   const queryLength = Object.keys(req.query).length;
   if (queryLength > 0) {
-    let methods = ["sort_by", "order", "category", "limit"];
-    let errorFound = false;
-    const request = Object.keys(req.query);
-    request.forEach((element) => {
-      if (!methods.includes(element)) {
-        errorFound = true;
-      }
-    });
-    if (errorFound === true) {
-      return res.status(400).send("Bad request, incorrect method");
-    } else
-      selectReviews(req.query)
-        .then((reviews) => {
-          res.status(200).send({ reviews });
-        })
-        .catch((err) => {
-          console.log(err);
-          next(err);
-        });
+    selectReviews(req.query)
+      .then((reviews) => {
+        res.status(200).send({ reviews });
+      })
+      .catch((err) => {
+        console.log(err);
+        next(err);
+      });
   } else
     selectReviews()
       .then((reviews) => {
