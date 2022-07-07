@@ -127,3 +127,10 @@ exports.selectReviews = (input) => {
         return result.rows;
       });
 };
+
+`SELECT *, SELECT (COUNT(*)::INT) OVER () AS total_count
+        FROM reviews
+        ORDER BY ${sort_by} ${order}
+        LIMIT ${limit}
+        OFFSET (${p} * ${limit} - ${limit})
+  `;
