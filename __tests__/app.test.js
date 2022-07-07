@@ -237,7 +237,7 @@ describe("GET: /api/reviews", () => {
         });
       });
   });
-  test.only("200: endpoint now accepts query sort_by", () => {
+  test("200: endpoint now accepts query sort_by", () => {
     return request(app)
       .get("/api/reviews?sort_by=review_id")
       .expect(200)
