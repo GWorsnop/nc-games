@@ -600,6 +600,18 @@ describe("PATCH /api/comments/:comment_id", () => {
         expect(body.message).toBe("Not Found - comment_id does not exist");
       });
   });
+  test("ERROR 404: returns review does not exist if review_id is not a number", () => {
+    const commentUpdate = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/george")
+      .send(commentUpdate)
+      .expect(422)
+      .then(({ body }) => {
+        expect(body.message).toBe(
+          "Unprocessable Entity - request must be a number"
+        );
+      });
+  });
 });
 
 describe("POST: /api/reviews", () => {
