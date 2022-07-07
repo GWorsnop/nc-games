@@ -488,6 +488,32 @@ describe("GET /api", () => {
   });
 });
 
+describe.only("GET: /api/users/:username", () => {
+  test("200: returns a user object, with correct properties", () => {
+    return request(app)
+      .get("/api/users/mallionaire")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toEqual({
+          user: {
+            username: "mallionaire",
+            avatar_url:
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+            name: "haz",
+          },
+        });
+      });
+  });
+  test("ERROR 404: returns username does not exist if username does not exist", () => {
+    return request(app)
+      .get("/api/users/george")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Not Found - username does not exist");
+      });
+  });
+});
+
 describe("Generic errors of API", () => {
   test("ERROR 404: returns bad path if wrong endpoint written", () => {
     return request(app)
