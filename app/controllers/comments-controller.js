@@ -2,7 +2,8 @@ const {
   selectComments,
   insertComment,
   removeComment,
-  getCommentById,
+  selectCommentById,
+  updateCommentVotes,
 } = require("../models/comments-model");
 const { selectReviewById } = require("../models/reviews-model");
 
@@ -31,7 +32,7 @@ exports.postComment = async (req, res, next) => {
 
 exports.deleteComment = (req, res, next) => {
   const { comment_id } = req.params;
-  return getCommentById(comment_id)
+  return selectCommentById(comment_id)
     .then((result) => {
       removeComment(comment_id)
         .then(() => {
@@ -44,4 +45,24 @@ exports.deleteComment = (req, res, next) => {
     .catch((err) => {
       next(err);
     });
+};
+
+exports.patchComment = (req, res, next) => {
+  const { inc_votes } = req.body;
+  const { comment_id } = req.params;
+  if (inc_votes === undefined) {
+    selectCommentById(comment_id).then((selectedComment) => {
+      res.status(400).send({
+        comment: selectedComment,
+        errorMessage: "Bad Request - Please provide inc_votes in request",
+      });
+    });
+  } else
+    updateCommentVotes(inc_votes, comment_id)
+      .then((comment) => {
+        res.status(200).send({ comment });
+      })
+      .catch((err) => {
+        next(err);
+      });
 };

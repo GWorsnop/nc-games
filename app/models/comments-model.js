@@ -14,7 +14,7 @@ exports.selectComments = (review_id) => {
     });
 };
 
-exports.getCommentById = (comment_id) => {
+exports.selectCommentById = (comment_id) => {
   return connection
     .query(
       `
@@ -25,7 +25,7 @@ exports.getCommentById = (comment_id) => {
     )
     .then((result) => {
       if (result.rowCount > 0) {
-        return result;
+        return result.rows[0];
       } else {
         return Promise.reject({
           status: 404,
@@ -72,4 +72,27 @@ exports.removeComment = (comment_id) => {
           `,
     [comment_id]
   );
+};
+
+exports.updateCommentVotes = (inc_votes, comment_id) => {
+  return connection
+    .query(
+      `
+      UPDATE comments 
+      SET votes = votes + $1 
+      WHERE comment_id = $2 
+      RETURNING *
+      `,
+      [inc_votes, comment_id]
+    )
+    .then((result) => {
+      if (result.rows.length > 0) {
+        return result.rows[0];
+      } else {
+        return Promise.reject({
+          status: 404,
+          errorMessage: "Not Found - comment_id does not exist",
+        });
+      }
+    });
 };
