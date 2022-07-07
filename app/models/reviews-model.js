@@ -1,5 +1,6 @@
 const connection = require("../../db/connection");
 const { selectCategoryByQuery } = require("../models/categories-model");
+const { checkType } = require("../utility/check-type");
 
 exports.selectReviewById = (review_id) => {
   return connection
@@ -128,4 +129,29 @@ exports.selectReviews = (query = { sort_by: "created_at" }) => {
       status: 400,
       errorMessage: "Bad request, incorrect method",
     });
+};
+
+exports.insertReview = (newReview, next) => {
+  const { owner, title, review_body, designer, category } = newReview;
+  if (owner && title && review_body && designer && category) {
+    return checkType(newReview)
+      .then((checkedReview) => {
+        return connection.query(
+          `INSERT INTO reviews
+            (owner, title, review_body, designer, category)
+            VALUES
+            ($1, $2, $3, $4, $5)
+            RETURNING *`,
+          [owner, title, review_body, designer, category]
+        );
+      })
+      .then((result) => {
+        return result.rows[0];
+      });
+  } else {
+    return Promise.reject({
+      status: 400,
+      errorMessage: "Bad Request - Missing fields",
+    });
+  }
 };
