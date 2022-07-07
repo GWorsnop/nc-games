@@ -576,6 +576,85 @@ describe("PATCH /api/comments/:comment_id", () => {
   });
 });
 
+describe("POST: /api/reviews", () => {
+  test("201: adds review to the database and responds with newly created review", () => {
+    const newReview = {
+      category: "euro game",
+      designer: "George Worsnop",
+      owner: "mallionaire",
+      review_body: "Incredible, amazing, a delight.",
+      title: "George's Amazing Game!",
+    };
+    return request(app)
+      .post("/api/reviews/")
+      .send(newReview)
+      .expect(201)
+      .then((res) => {
+        const postedReview = res.body.review;
+        expect(postedReview).toEqual(
+          expect.objectContaining({
+            category: "euro game",
+            designer: "George Worsnop",
+            owner: "mallionaire",
+            review_body: "Incredible, amazing, a delight.",
+            title: "George's Amazing Game!",
+            votes: 0,
+            created_at: expect.any(String),
+            review_id: 14,
+            review_img_url:
+              "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
+          })
+        );
+      });
+  });
+  test("ERROR 400: does not post if username is incorrect", () => {
+    const newReview = {
+      category: "euro game",
+      designer: "George Worsnop",
+      owner: "GWorsnop",
+      review_body: "Incredible, amazing, a delight.",
+      title: "George's Amazing Game!",
+    };
+    return request(app)
+      .post("/api/reviews")
+      .send(newReview)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad Request - Username does not exist");
+      });
+  });
+  test("ERROR 400: does not post if any part of req object is missing", () => {
+    const newReview = {
+      category: "euro game",
+    };
+    return request(app)
+      .post("/api/reviews")
+      .send(newReview)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad Request - Missing fields");
+      });
+  });
+  test("ERROR 422: returns error if body is incorrect", () => {
+    const newReview = {
+      category: "euro game",
+      designer: 12345,
+      owner: "mallionaire",
+      review_body: "Incredible, amazing, a delight.",
+      title: "George's Amazing Game!",
+    };
+    return request(app)
+      .post("/api/reviews")
+      .expect(422)
+      .send(newReview)
+      .then(({ body }) => {
+        expect(body.message).toBe(
+          "Unprocessable Entity - Your comment object must only contain strings"
+        );
+      });
+  });
+});
+
 describe("Generic errors of API", () => {
   test("ERROR 404: returns bad path if wrong endpoint written", () => {
     return request(app)
@@ -583,6 +662,16 @@ describe("Generic errors of API", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.message).toBe("Path not found");
+      });
+  });
+  test("ERROR 405: returns method not allowed if wrong method written on endpoint", () => {
+    return request(app)
+      .post("/api")
+      .expect(405)
+      .then(({ body }) => {
+        expect(body.message).toBe(
+          "Not Allowed - Method not allowed on this endpoint"
+        );
       });
   });
 });
