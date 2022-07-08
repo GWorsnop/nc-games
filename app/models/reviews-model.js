@@ -114,6 +114,7 @@ exports.selectReviews = (input) => {
           .then((result) => {
             if (result.length > 0) {
               queryArr.push(category);
+              queryArr.push(limit, offset);
             }
             return connection.query(
               `
@@ -121,8 +122,8 @@ exports.selectReviews = (input) => {
           FROM reviews
           WHERE category = $1
           ORDER BY ${sort_by} ${order}
-          LIMIT ${limit}
-          OFFSET (${offset})
+          LIMIT $2
+          OFFSET $3
             `,
               queryArr
             );
@@ -130,20 +131,21 @@ exports.selectReviews = (input) => {
           .then((result) => {
             return result.rows;
           });
-      } else
-        return connection
-          .query(
-            `
+      } else queryArr.push(limit, offset);
+      return connection
+        .query(
+          `
         SELECT *, count(*) OVER()::INT AS total_count
         FROM reviews
         ORDER BY ${sort_by} ${order}
-        LIMIT ${limit}
-        OFFSET (${offset})
-          `
-          )
-          .then((result) => {
-            return result.rows;
-          });
+        LIMIT $1
+        OFFSET $2
+          `,
+          queryArr
+        )
+        .then((result) => {
+          return result.rows;
+        });
     }
   }
 };
