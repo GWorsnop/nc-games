@@ -1,4 +1,7 @@
 {
+  "GET /": {
+    "description": "serves up a JSON welcome message, detailing how to access the /api endpoint."
+  },
   "GET /api": {
     "description": "serves up a json representation of all the available endpoints of the api, including functionality"
   },
@@ -14,9 +17,49 @@
       ]
     }
   },
+  "POST /api/categories": {
+    "description": "adds a new category to the categories database",
+    "queries": [],
+    "body": {"slug": "string", "description": "string"},
+    "exampleResponse": {
+      "category": [
+        {
+          "description": "Players work together to achieve a common goal rather than competing against each other.",
+          "slug": "co-operative game"
+        }
+      ]
+    }
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "parameters": {},
+    "queries": [],
+    "exampleResponse": { 
+      "users": [
+        {
+        "username": "mallionaire",
+        "name": "haz",
+        "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        }
+      ]
+    }
+  },
+  "GET /api/users/:username": {
+    "description": "serves a specific user based on parameter of username",
+    "parameters": {"username": "string"},
+    "queries": [],
+    "exampleResponse": { 
+      "user":
+        {
+        "username": "mallionaire",
+        "name": "haz",
+        "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        }
+    }
+  },
   "GET /api/reviews": {
     "description": "serves an array of all reviews",
-    "queries": ["category", "sort_by", "order"],
+    "queries": ["category", "sort_by", "order", "limit", "p"],
     "exampleResponse": {
       "reviews": [
         {
@@ -24,9 +67,33 @@
           "designer": "Akihisa Okui",
           "owner": "happyamy2016",
           "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-          "category": "hidden-roles",
+          "review_body": "We couldn't find the werewolf!",
+          "category": "social deduction",
           "created_at": 1610964101251,
-          "votes": 5
+          "votes": 5,
+          "comment_count": 3,
+          "total_count": 13
+        }
+      ]
+    }
+  },
+  "POST /api/reviews": {
+    "description": "adds a new review to the reviews database",
+    "queries": [],
+    "body": {"owner": "string", "title": "string", "body": "string", "designer": "string", "category": "string"},
+    "exampleResponse": {
+      "reviews": [
+        {
+          "title": "George's Amazing Game",
+          "designer": "George Worsnop",
+          "owner": "mallionaire",
+          "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+          "review_body": "Incredible, amazing, a delight.",
+          "category": "euro game",
+          "created_at": 1610964101251,
+          "votes": 0,
+          "comment_count": 0,
+          "total_count": 14
         }
       ]
     }
@@ -72,21 +139,13 @@
       }
     }
   },
-  "GET /api/users": {
-    "description": "serves an array of all users",
-    "parameters": {},
+  "DELETE /api/reviews/:review_id": {
+    "description": "deletes specific review from the database based on the parameter of review_id",
     "queries": [],
-    "exampleResponse": { 
-      "users": [
-        {
-        "username": "mallionaire",
-        "name": "haz",
-        "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
-        }
-      ]
-    }
+    "parameters": {"review_id": "integer"},
+    "exampleResponse": { "status": 204 }
   },
-   "GET /api/reviews:review_id/comments": {
+   "GET /api/reviews/:review_id/comments": {
     "description": "serves an array of comments for the given review based on parameter of review_id",
     "parameters": {"review_id": "integer"},
     "queries": [],
@@ -103,7 +162,7 @@
       ]
     }
   },
-  "POST /api/reviews:review_id/comments": {
+  "POST /api/reviews/:review_id/comments": {
     "description": "adds comment on given review based on parameter of review_id. NOTE - username must be existing user",
     "parameters": {"review_id": "integer"},
     "queries": [],
@@ -119,6 +178,29 @@
         "created_at": "2022-07-06T11:32:54.696Z"
       }
     }
+  },
+  "PATCH /api/comments/:review_id": {
+    "description": "edits a specific comment's votes based on parameters of review_id",
+    "parameters": {"review_id": "integer"},
+    "body": {"inc_votes" : "integer"},
+    "queries": [],
+    "exampleResponse": {
+      "comment":
+      {
+        "comment_id": 7,
+        "body": "Amazing! I love it.",
+        "votes": 50,
+        "author": "mallionaire",
+        "review_id": 1,
+        "created_at": "2022-07-06T11:32:54.696Z"
+      }
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes specific comment from the database based on the parameter of comment_id",
+    "queries": [],
+    "parameters": {"review_id": "integer"},
+    "exampleResponse": { "status": 204 }
   }
 }
 
