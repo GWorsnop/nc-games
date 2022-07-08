@@ -181,6 +181,56 @@ describe("GET: /api/reviews/:review_id/comments", () => {
         expect(body.comments.length).toBe(0);
       });
   });
+  test("200: now accepts limit as a query", () => {
+    return request(app)
+      .get("/api/reviews/3/comments?limit=2")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body.comments)).toBe(true);
+        expect(body.comments.length).toBe(2);
+        expect(body.comments[0]).toEqual({
+          comment_id: 2,
+          votes: 13,
+          created_at: "2021-01-18T10:09:05.410Z",
+          author: "mallionaire",
+          body: "My dog loved this game too!",
+          review_id: 3,
+        });
+      });
+  });
+  test("200: now accepts p as a query", () => {
+    return request(app)
+      .get("/api/reviews/3/comments?p=2")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body.comments)).toBe(true);
+        expect(body.comments.length).toBe(0);
+      });
+  });
+  test("400: bad request if limit is wrong", () => {
+    return request(app)
+      .get("/api/reviews/3/comments?limit=George")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toEqual("Bad request, limit must be a number");
+      });
+  });
+  test("400: bad request if p is wrong", () => {
+    return request(app)
+      .get("/api/reviews/3/comments?p=George")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toEqual("Bad request, p must be a number");
+      });
+  });
+  test("400: bad request if query is wrong", () => {
+    return request(app)
+      .get("/api/reviews/3/comments?George=3")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toEqual("Bad request, incorrect method");
+      });
+  });
   test("ERROR 422: returns error if review_id is incorrect", () => {
     return request(app)
       .get("/api/reviews/banana/comments")
