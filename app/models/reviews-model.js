@@ -174,3 +174,13 @@ exports.insertReview = (newReview, next) => {
     });
   }
 };
+
+exports.removeReview = (review_id) => {
+  return connection.query(
+    `
+          DELETE FROM reviews 
+          WHERE review_id = $1
+          `,
+    [review_id]
+  );
+};
