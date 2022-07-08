@@ -3,6 +3,7 @@ const {
   getReviewById,
   patchReviewVotes,
   getReviews,
+  postReview,
 } = require("../controllers/reviews-controller");
 const {
   getComments,
@@ -10,7 +11,7 @@ const {
 } = require("../controllers/comments-controller");
 const { methodNotAllowed } = require("../error-middleware");
 
-reviewsRouter.route("/").get(getReviews).all(methodNotAllowed);
+reviewsRouter.route("/").get(getReviews).post(postReview).all(methodNotAllowed);
 
 reviewsRouter
   .route("/:review_id")

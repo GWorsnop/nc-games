@@ -20,8 +20,8 @@ exports.psqlError = (err, req, res, next) => {
       .status(422)
       .send({ message: "Unprocessable Entity - request must be a number" });
   } else if (
-    err.code === "23503" &&
-    err.constraint === "comments_author_fkey"
+    (err.code === "23503" && err.constraint === "comments_author_fkey") ||
+    err.constraint === "reviews_owner_fkey"
   ) {
     res.status(400).send({ message: "Bad Request - Username does not exist" });
   } else if (
