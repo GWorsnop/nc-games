@@ -14,6 +14,7 @@ All of these should aid in the reading of this API with no loss of functionality
 
 ### This API is hosted on Heroku at [NC-Games-API](https://nc-games-GWorsnop.herokuapp.com/)
 
+Using GitHub actions this API will be automatically deployed every time there is a change.
 This API returns JSON objects.
 To ease viewing you will need the Chrome (or equivalent) extension - JSON viewer.
 
