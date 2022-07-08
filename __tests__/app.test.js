@@ -790,6 +790,57 @@ describe("POST: /api/reviews", () => {
   });
 });
 
+describe("POST: /api/categories", () => {
+  test("201: adds category to the database and responds with newly created category", () => {
+    const newCategory = {
+      slug: "co-operative game",
+      description:
+        "Players work together to achieve a common goal rather than competing against each other.",
+    };
+    return request(app)
+      .post("/api/categories")
+      .send(newCategory)
+      .expect(201)
+      .then((res) => {
+        const postedCategory = res.body.category;
+        expect(postedCategory).toEqual(
+          expect.objectContaining({
+            slug: "co-operative game",
+            description:
+              "Players work together to achieve a common goal rather than competing against each other.",
+          })
+        );
+      });
+  });
+  test("ERROR 400: does not post if any part of req object is missing", () => {
+    const newCategory = {
+      slug: "co-operative game",
+    };
+    return request(app)
+      .post("/api/categories")
+      .send(newCategory)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad Request - Missing fields");
+      });
+  });
+  test("ERROR 422: returns error if body is incorrect", () => {
+    const newCategory = {
+      slug: "euro game",
+      description: 12345,
+    };
+    return request(app)
+      .post("/api/categories")
+      .expect(422)
+      .send(newCategory)
+      .then(({ body }) => {
+        expect(body.message).toBe(
+          "Unprocessable Entity - Your comment object must only contain strings"
+        );
+      });
+  });
+});
+
 describe("Generic errors of API", () => {
   test("ERROR 404: returns bad path if wrong endpoint written", () => {
     return request(app)
