@@ -6,7 +6,7 @@ on:
       - main
 jobs:
   greeting:
-  runs-on: ubuntu-latest
-  steps:
-    - name: Say Hello
-      run: echo "CICD running"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Say Hello
+        run: echo "CICD running"
