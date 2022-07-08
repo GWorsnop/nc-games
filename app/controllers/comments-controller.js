@@ -10,7 +10,7 @@ const { selectReviewById } = require("../models/reviews-model");
 exports.getComments = async (req, res, next) => {
   try {
     const { review_id } = req.params;
-    const comments = await selectComments(review_id);
+    const comments = await selectComments(review_id, req.query);
     await selectReviewById(review_id);
     res.status(200).send({ comments });
   } catch (err) {

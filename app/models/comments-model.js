@@ -1,17 +1,49 @@
 const connection = require("../../db/connection");
 
-exports.selectComments = (review_id) => {
-  return connection
-    .query(
-      `
+exports.selectComments = (review_id, input) => {
+  const { limit = 10, p = 1 } = input;
+  if (isNaN(Number(limit))) {
+    return Promise.reject({
+      status: 400,
+      errorMessage: "Bad request, limit must be a number",
+    });
+  }
+  if (isNaN(Number(p))) {
+    return Promise.reject({
+      status: 400,
+      errorMessage: "Bad request, p must be a number",
+    });
+  } else {
+    const offset = p * limit - limit;
+    const methods = ["limit", "p"];
+    let errorFound = false;
+    const request = Object.keys(input);
+    request.forEach((element) => {
+      if (!methods.includes(element)) {
+        errorFound = true;
+      }
+    });
+    if (errorFound === true) {
+      return Promise.reject({
+        status: 400,
+        errorMessage: "Bad request, incorrect method",
+      });
+    } else {
+      return connection
+        .query(
+          `
           SELECT * FROM comments
           WHERE review_id = $1
+          LIMIT $2
+          OFFSET $3
             `,
-      [review_id]
-    )
-    .then((result) => {
-      return result.rows;
-    });
+          [review_id, limit, offset]
+        )
+        .then((result) => {
+          return result.rows;
+        });
+    }
+  }
 };
 
 exports.selectCommentById = (comment_id) => {
