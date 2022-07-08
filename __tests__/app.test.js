@@ -840,7 +840,7 @@ describe("POST: /api/categories", () => {
       });
   });
 });
-describe.only("DELETE: /api/reviews/:review_id", () => {
+describe("DELETE: /api/reviews/:review_id", () => {
   test("204: responds with 204 and returns nothing", () => {
     return request(app).delete("/api/reviews/1").expect(204);
   });
