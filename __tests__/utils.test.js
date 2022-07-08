@@ -104,7 +104,7 @@ describe("formatComments", () => {
   });
 });
 
-describe.only("check type", () => {
+describe("check type", () => {
   test("returns an resolved promise, if passed an empty object", () => {
     const object = {};
     expect(checkType(object)).resolves.toEqual({});

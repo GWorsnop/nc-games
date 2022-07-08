@@ -586,7 +586,7 @@ describe("POST: /api/reviews", () => {
       title: "George's Amazing Game!",
     };
     return request(app)
-      .post("/api/reviews/")
+      .post("/api/reviews")
       .send(newReview)
       .expect(201)
       .then((res) => {
@@ -675,5 +675,3 @@ describe("Generic errors of API", () => {
       });
   });
 });
-
-//
