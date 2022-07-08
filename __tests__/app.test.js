@@ -300,7 +300,7 @@ describe("GET: /api/reviews", () => {
         });
         expect(body.reviews[0]).toEqual({
           category: "social deduction",
-          created_at: "1970-01-10T02:08:38.400Z",
+          created_at: expect.any(String),
           designer: "Klaus Teuber",
           owner: "mallionaire",
           review_body:
@@ -327,7 +327,7 @@ describe("GET: /api/reviews", () => {
         });
         expect(body.reviews[0]).toEqual({
           category: "social deduction",
-          created_at: "1970-01-10T02:08:38.400Z",
+          created_at: expect.any(String),
           designer: "Klaus Teuber",
           owner: "mallionaire",
           review_body:
