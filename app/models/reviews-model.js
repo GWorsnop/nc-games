@@ -1,5 +1,6 @@
 const connection = require("../../db/connection");
 const { selectCategoryByQuery } = require("../models/categories-model");
+const { checkType } = require("../utility/check-type");
 
 exports.selectReviewById = (review_id) => {
   return connection
@@ -51,86 +52,123 @@ exports.selectReviews = (input) => {
     limit = 10,
     p = 1,
   } = input;
-  const methods = ["sort_by", "order", "category", "limit", "p"];
-  const queryArr = [];
-  let whereStr = "";
-  let errorFound = false;
-  if (errorFound === true) {
-    return res.status(400).send({ message: "Bad request, incorrect method" });
+  if (isNaN(Number(limit))) {
+    return Promise.reject({
+      status: 400,
+      errorMessage: "Bad request, limit must be a number",
+    });
   }
-
-  if (sort_by) {
-    let sortByOptions = [
-      "review_id",
-      "title",
-      "category",
-      "designer",
-      "owner",
-      "review_body",
-      "review_img_url",
-      "created_at",
-      "votes",
-      "comment_count",
-    ];
-    if (!sortByOptions.includes(sort_by)) {
+  if (isNaN(Number(p))) {
+    return Promise.reject({
+      status: 400,
+      errorMessage: "Bad request, p must be a number",
+    });
+  } else {
+    const offset = p * limit - limit;
+    const methods = ["sort_by", "order", "category", "limit", "p"];
+    const queryArr = [];
+    let errorFound = false;
+    const request = Object.keys(input);
+    request.forEach((element) => {
+      if (!methods.includes(element)) {
+        errorFound = true;
+      }
+    });
+    if (errorFound === true) {
       return Promise.reject({
         status: 400,
-        errorMessage: "Bad request, incorrect sort_by",
+        errorMessage: "Bad request, incorrect method",
       });
-    }
-  }
-  if (order) {
-    let orderOptions = ["asc", "desc", "ASC", "DESC"];
-    if (!orderOptions.includes(order)) {
-      return Promise.reject({
-        status: 400,
-        errorMessage: "Bad request, incorrect order",
-      });
-    }
-  }
-  console.log("hello!");
-  if (category) {
-    return selectCategoryByQuery(category)
-      .then((result) => {
-        if (result.length > 0) {
-          whereStr = `WHERE category = $1`;
-          queryArr.push(category);
+    } else {
+      if (sort_by) {
+        let sortByOptions = [
+          "review_id",
+          "title",
+          "category",
+          "designer",
+          "owner",
+          "review_body",
+          "review_img_url",
+          "created_at",
+          "votes",
+          "comment_count",
+        ];
+        if (!sortByOptions.includes(sort_by)) {
+          return Promise.reject({
+            status: 400,
+            errorMessage: "Bad request, incorrect sort_by",
+          });
         }
-        return connection.query(
-          `
-            SELECT *, COUNT(review_id) AS total_count
-            FROM reviews
-            ${whereStr}
-            GROUP BY review_id
-            ORDER BY ${sort_by} ${order}
-            LIMIT ${limit}
-            OFFSET (${p} * ${limit} - ${limit})
+      }
+      if (order) {
+        let orderOptions = ["asc", "desc", "ASC", "DESC"];
+        if (!orderOptions.includes(order)) {
+          return Promise.reject({
+            status: 400,
+            errorMessage: "Bad request, incorrect order",
+          });
+        }
+      }
+      if (category) {
+        return selectCategoryByQuery(category)
+          .then((result) => {
+            if (result.length > 0) {
+              queryArr.push(category);
+            }
+            return connection.query(
+              `
+          SELECT *, count(*) OVER()::INT AS total_count
+          FROM reviews
+          WHERE category = $1
+          ORDER BY ${sort_by} ${order}
+          LIMIT ${limit}
+          OFFSET (${offset})
             `,
-          queryArr
+              queryArr
+            );
+          })
+          .then((result) => {
+            return result.rows;
+          });
+      } else
+        return connection
+          .query(
+            `
+        SELECT *, count(*) OVER()::INT AS total_count
+        FROM reviews
+        ORDER BY ${sort_by} ${order}
+        LIMIT ${limit}
+        OFFSET (${offset})
+          `
+          )
+          .then((result) => {
+            return result.rows;
+          });
+    }
+  }
+};
+
+exports.insertReview = (newReview, next) => {
+  const { owner, title, review_body, designer, category } = newReview;
+  if (owner && title && review_body && designer && category) {
+    return checkType(newReview)
+      .then((checkedReview) => {
+        return connection.query(
+          `INSERT INTO reviews
+            (owner, title, review_body, designer, category)
+            VALUES
+            ($1, $2, $3, $4, $5)
+            RETURNING *`,
+          [owner, title, review_body, designer, category]
         );
       })
       .then((result) => {
-        return result.rows;
+        return result.rows[0];
       });
-  } else
-    return connection
-      .query(
-        `
-        SELECT *, SELECT (COUNT(*)::INT) AS total_count
-        FROM reviews
-        ORDER BY ${sort_by} ${order}
-        LIMIT ${limit}
-        OFFSET (${p} * ${limit} - ${limit})
-  `
-      )
-      .then((result) => {
-        return result.rows;
-      });
+  } else {
+    return Promise.reject({
+      status: 400,
+      errorMessage: "Bad Request - Missing fields",
+    });
+  }
 };
-
-`SELECT *, SELECT (COUNT(*)::INT) OVER () AS total_count
-        FROM reviews
-        ORDER BY ${sort_by} ${order}
-        LIMIT ${limit}
-        OFFSET (${p} * ${limit} - ${limit})
-  `;
