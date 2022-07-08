@@ -260,6 +260,7 @@ describe("GET: /api/reviews", () => {
             "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
           title: "Settlers of Catan: Don't Settle For Less",
           votes: 16,
+          total_count: 13,
         });
       });
   });
@@ -286,6 +287,7 @@ describe("GET: /api/reviews", () => {
             "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
           title: "Settlers of Catan: Don't Settle For Less",
           votes: 16,
+          total_count: 13,
         });
       });
   });
@@ -322,6 +324,7 @@ describe("GET: /api/reviews", () => {
             "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
           title: "Agricola",
           votes: 1,
+          total_count: 13,
         });
       });
   });
@@ -348,7 +351,7 @@ describe("GET: /api/reviews", () => {
             "https://images.pexels.com/photos/278888/pexels-photo-278888.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
           title: "Mollit elit qui incididunt veniam occaecat cupidatat",
           votes: 9,
-          total_count: 1,
+          total_count: 13,
         });
       });
   });
@@ -375,7 +378,7 @@ describe("GET: /api/reviews", () => {
             "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
           title: "Proident tempor et.",
           votes: 5,
-          total_count: 1,
+          total_count: 13,
         });
       });
   });
@@ -401,6 +404,22 @@ describe("GET: /api/reviews", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.message).toEqual("Bad request, incorrect order");
+      });
+  });
+  test("400: bad request if limit is wrong", () => {
+    return request(app)
+      .get("/api/reviews?limit=George")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toEqual("Bad request, limit must be a number");
+      });
+  });
+  test("400: bad request if p is wrong", () => {
+    return request(app)
+      .get("/api/reviews?p=George")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toEqual("Bad request, p must be a number");
       });
   });
   test("400: bad request if method is wrong with multiple queries", () => {
@@ -642,7 +661,7 @@ describe("PATCH /api/comments/:comment_id", () => {
   });
 });
 
-xdescribe("POST: /api/reviews", () => {
+describe("POST: /api/reviews", () => {
   test("201: adds review to the database and responds with newly created review", () => {
     const newReview = {
       category: "euro game",
