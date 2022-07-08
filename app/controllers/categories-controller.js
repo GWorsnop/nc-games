@@ -1,6 +1,7 @@
 const {
   selectCategories,
   selectCategoryByQuery,
+  insertCategory,
 } = require("../models/categories-model");
 
 exports.getCategories = (req, res) => {
@@ -15,4 +16,15 @@ exports.getCategoryByQuery = (req, res) => {
   selectCategoryByQuery(category).then((foundCategory) => {
     res.status(200).send({ category: foundCategory });
   });
+};
+
+exports.postCategory = (req, res, next) => {
+  const newCategory = req.body;
+  insertCategory(newCategory)
+    .then((createdCategory) => {
+      res.status(201).send({ category: createdCategory });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
