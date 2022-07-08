@@ -26,6 +26,7 @@ jobs:
         run: PGDATABASE=nc_games_test PGUSER=george PGPASSWORD=worsnop npm test app
   deploy:
     runs-on: ubuntu-latest
+    needs: test
     steps:
       - name: Checkout and clone repo
         uses: actions/checkout@v2
