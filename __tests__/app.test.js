@@ -311,6 +311,7 @@ describe("GET: /api/reviews", () => {
           title: "Settlers of Catan: Don't Settle For Less",
           votes: 16,
           total_count: 13,
+          comment_count: 0,
         });
       });
   });
@@ -338,6 +339,7 @@ describe("GET: /api/reviews", () => {
           title: "Settlers of Catan: Don't Settle For Less",
           votes: 16,
           total_count: 13,
+          comment_count: 0,
         });
       });
   });
@@ -375,6 +377,7 @@ describe("GET: /api/reviews", () => {
           title: "Agricola",
           votes: 1,
           total_count: 13,
+          comment_count: 0,
         });
       });
   });
@@ -402,6 +405,7 @@ describe("GET: /api/reviews", () => {
           title: "Mollit elit qui incididunt veniam occaecat cupidatat",
           votes: 9,
           total_count: 13,
+          comment_count: 0,
         });
       });
   });
@@ -429,6 +433,7 @@ describe("GET: /api/reviews", () => {
           title: "Proident tempor et.",
           votes: 5,
           total_count: 13,
+          comment_count: 0,
         });
       });
   });
