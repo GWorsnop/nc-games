@@ -118,9 +118,11 @@ exports.selectReviews = (input) => {
             }
             return connection.query(
               `
-          SELECT *, count(*) OVER()::INT AS total_count
+          SELECT *, count(*) OVER()::INT AS total_count, COUNT(comments.body)::int AS comment_count
           FROM reviews
+          LEFT JOIN comments ON reviews.review_id = comments.review_id
           WHERE category = $1
+          GROUP BY reviews.review_id
           ORDER BY ${sort_by} ${order}
           LIMIT $2
           OFFSET $3
