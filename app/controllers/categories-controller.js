@@ -10,12 +10,16 @@ exports.getCategories = (req, res) => {
   });
 };
 
-exports.getCategoryByQuery = (req, res) => {
+exports.getCategoryByQuery = (req, res, next) => {
   const query = req.query;
   const category = query.category;
-  selectCategoryByQuery(category).then((foundCategory) => {
-    res.status(200).send({ category: foundCategory });
-  });
+  selectCategoryByQuery(category)
+    .then((foundCategory) => {
+      res.status(200).send({ category: foundCategory });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 exports.postCategory = (req, res, next) => {
