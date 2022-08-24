@@ -17,7 +17,14 @@ WHERE slug = $1
       [category]
     )
     .then((result) => {
-      return result.rows;
+      if (result.rows.length > 0) {
+        return result.rows;
+      } else {
+        return Promise.reject({
+          status: 400,
+          errorMessage: "Bad Request, Category does not exist",
+        });
+      }
     });
 };
 
