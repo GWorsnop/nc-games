@@ -437,6 +437,14 @@ describe("GET: /api/reviews", () => {
         });
       });
   });
+  test("400: bad request if category does not exist", () => {
+    return request(app)
+      .get("/api/reviews?category=George")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toEqual("Bad Request, Category does not exist");
+      });
+  });
   test("400: bad request if sort_by category does not exist", () => {
     return request(app)
       .get("/api/reviews?sort_by=George")
