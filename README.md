@@ -12,7 +12,7 @@ All of these should aid in the reading of this API with no loss of functionality
 
 ## Access the hosted API
 
-### This API is hosted on Heroku at [NC-Games-API](https://nc-games-GWorsnop.herokuapp.com/)
+### This API is hosted on Heroku at [NC-Games-API](https://nc-games-backend-nfl0.onrender.com/api)
 
 Using GitHub actions this API will be automatically deployed every time there is a change.
 This API returns JSON objects.
